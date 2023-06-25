@@ -1,0 +1,55 @@
+version: '3.7'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+    restart: always
+    container_name: zcekni_auto
+    environment:
+      - DB_HOST=mariadb
+    ports:
+      - 5000:5000
+    depends_on:
+      - mariadb
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    networks:
+      - zcekni_auto_internal
+
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_DATABASE_FILE=/run/secrets/db_name
+      - MYSQL_USER_FILE=/run/secrets/db_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    volumes:
+      - db-data:/var/lib/mysql
+    secrets:
+      - db_root_password
+      - db_name
+      - db_user
+      - db_password
+    networks:
+      - zcekni_auto_internal
+
+secrets:
+  db_root_password:
+    file: ./secrets/db_root_password
+  db_name:
+    file: ./secrets/db_name
+  db_user:
+    file: ./secrets/db_user
+  db_password:
+    file: ./secrets/db_password
+networks:
+  zcekni_auto_internal:
+    driver: bridge
+volumes:
+  db-data:
+    driver: local
