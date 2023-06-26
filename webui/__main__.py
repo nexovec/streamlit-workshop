@@ -1,3 +1,5 @@
+# TODO: actually use this as a launcher
+# TODO: move debugger in here
 if not __name__ == "__main__":
     raise Exception("This file is not meant to be imported.")
 

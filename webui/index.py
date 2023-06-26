@@ -3,6 +3,20 @@ import mysql.connector
 import os
 import pandas as pd
 
+import debugpy
+
+DEBUGGER_PORT = 5678
+DEBUGGER_HOST = "0.0.0.0"
+if os.environ.get("DEBUGGER") is not None:
+    try:
+        debugpy.listen((DEBUGGER_HOST, DEBUGGER_PORT))
+        debugpy.wait_for_client()
+    except RuntimeError as e:
+        st.error(e)
+        st.warning(f"Check if port {DEBUGGER_PORT} is already in use.")
+        st.stop()
+        # raise e
+
 st.title("Hello World")
 secrets = ["db_name", "db_user", "db_password"]
 assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"
@@ -20,7 +34,7 @@ connection = mysql.connector.connect(
     password=secrets["db_password"]
 )
 cursor = connection.cursor(buffered=True)
-generator = cursor.execute("SHOW TABLES")
+generator = cursor.execute("SHOW DATABASES")
 tables = [] if generator is None else generator.fetchall()
 df = pd.DataFrame(tables)
 st.table(df)

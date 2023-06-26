@@ -4,17 +4,20 @@ ARG USE_VENV_PIP_CACHE
 WORKDIR /app
 COPY . .
 
-RUN if [ -z "$USE_VENV_PIP_CACHE" ]; then \
-    echo "Variable not defined"; \
+# FIXME: command needs verifying
+# TODO: add pip cache if any is available
+RUN if [ -z "$USE_PIP_CACHE" ]; then \
+    echo "USING PIP CACHE IS NOT IMPLEMENTED"; \
   else \
-    echo "Variable is defined: $USE_VENV_PIP_CACHE"; \
+    echo "NOT USING PIP CACHE"; \
   fi
 
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt --no-cache-dir --no-warn-script-location
+RUN pip install -r requirements.txt --no-cache-dir --no-cache --no-warn-script-location
 
 RUN mkdir -p ~/.streamlit/
 RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
     echo "email = \"\""  >> ~/.streamlit/credentials.toml
 FROM base AS app
-ENTRYPOINT ["streamlit", "run", "webui.py", "--browser.gatherUsageStats", "false", "--server.enableCORS", "true", "--server.port", "5000"]
+EXPOSE 5000
+ENTRYPOINT ["streamlit", "run", "webui/index.py", "--browser.gatherUsageStats", "false", "--server.enableCORS", "true", "--server.port", "5000"]
