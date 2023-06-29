@@ -2,6 +2,7 @@ import streamlit as st
 import mysql.connector
 import os
 import pandas as pd
+from streamlit.components.v1 import html
 
 import debugpy
 
@@ -18,18 +19,23 @@ if os.environ.get("DEBUGGER") is not None:
         st.stop()
         # raise e
 
+streamlit_menu_items = {
+    # "Get help": "<url>",
+    # 'Report a bug': "<url>",
+    # 'About': "<url>",
+}
+    
+st.set_page_config("Zčekni auto", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
 st.title("Hello World")
-# st.image("static/hug.jpg")
 
 # write html into st.markdown that displays an image that is a static file in the webui/static folder
-st.markdown("""
-<a href="https://www.huggingface.co" target="_self">
-    <img src="app/static/hug.jpg" alt="hug" width="100"/>
-</a>
-""", unsafe_allow_html=True)
-st.markdown("""
-<script type="text/javascript" src="app/static/onload.js"></script>
-""", unsafe_allow_html=True)
+# st.image("static/hug.jpg")
+image_html = open("templates/reffed_image.html").read().format(href="https://www.huggingface.co", image_src="app/static/hug.jpg")
+st.markdown(image_html, unsafe_allow_html=True)
+script_html = open("templates/inline_script.html").read().format(open("static/js/onload.js").read())
+# st.markdown(script_html, unsafe_allow_html=True) # Javascript does not execute with this one
+html(script_html, height=0) 
+st.markdown("Hello World")
 
 secrets = ["db_name", "db_user", "db_password"]
 assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"

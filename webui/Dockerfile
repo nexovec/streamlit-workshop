@@ -1,22 +1,17 @@
 FROM python:3.9-slim AS base
 ARG USE_PIP_CACHE
 WORKDIR /app
-COPY . .
-
-# FIXME: this doesn't work as intended, the if always executes.
-# TODO: add pip cache if any is available
-RUN if [ -z "$USE_PIP_CACHE" ]; then \
-    echo "USING PIP CACHE IS NOT IMPLEMENTED"; \
-  else \
-    echo "NOT USING PIP CACHE"; \
-  fi
 
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt --no-cache --no-warn-script-location
+COPY requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt --no-warn-script-location
 
 RUN mkdir -p ~/.streamlit/
 RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
     echo "email = \"\""  >> ~/.streamlit/credentials.toml
+
+COPY . .
+
 FROM base AS app
 
 EXPOSE 5000

@@ -18,6 +18,8 @@ services:
       - db_name
       - db_user
       - db_password
+    volumes:
+      - ./webui:/app # for live reloading code
     networks:
       - zcekni_auto_internal
 
