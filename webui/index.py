@@ -3,6 +3,10 @@ import mysql.connector
 import os
 import pandas as pd
 from streamlit.components.v1 import html
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import models
+import logging
 
 import debugpy
 
@@ -24,19 +28,11 @@ streamlit_menu_items = {
     # 'Report a bug': "<url>",
     # 'About': "<url>",
 }
-    
-st.set_page_config("Zčekni auto", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
-st.title("Hello World")
 
-# write html into st.markdown that displays an image that is a static file in the webui/static folder
-# st.image("static/hug.jpg")
-image_html = open("templates/reffed_image.html").read().format(href="https://www.huggingface.co", image_src="app/static/hug.jpg")
-st.markdown(image_html, unsafe_allow_html=True)
-script_html = open("templates/inline_script.html").read().format(open("static/js/onload.js").read())
-# st.markdown(script_html, unsafe_allow_html=True) # Javascript does not execute with this one
-html(script_html, height=0) 
-st.markdown("Hello World")
 
+# database connection
+
+## validating secrets and environment variables
 secrets = ["db_name", "db_user", "db_password"]
 assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"
 for secret in secrets:
@@ -47,28 +43,69 @@ for secret in secrets:
 secrets = {secret: open(os.path.join(SECRETS_PATH, secret), "r").read().strip() for secret in secrets}
 for secret in secrets:
     assert secret != "", f"Secret {os.path.join(SECRETS_PATH, secret)} must not be empty"
-try:
-    connection = mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "mariadb"),
-        database=secrets["db_name"],
-        user=secrets["db_user"],
-        password=secrets["db_password"],
-        port=os.environ.get("DB_PORT", 3306),
-    )
-except Exception as e:
-    st.warning("Our database is probably restarting, try later.")
-    st.error(e)
-    st.stop()
-cursor = connection.cursor(buffered=True)
-generator = cursor.execute("SHOW DATABASES")
-tables = [] if generator is None else generator.fetchall()
-df = pd.DataFrame(tables)
-st.table(df)
+
+## connecting with mysql.connector
+# try:
+#     connection = mysql.connector.connect(
+#         host=os.environ.get("DB_HOST", "mariadb"),
+#         database=secrets["db_name"],
+#         user=secrets["db_user"],
+#         password=secrets["db_password"],
+#         port=os.environ.get("DB_PORT", 3306),
+#     )
+# except Exception as e:
+#     st.warning("Our database is probably restarting, try later.")
+#     st.error(e)
+#     st.stop()
+
+## connecting with sqlalchemy
+# TODO: catch any exceptions
+protocol = "mysql+mysqlconnector"
+host=os.environ.get("DB_HOST", "mariadb")
+database=secrets["db_name"]
+user=secrets["db_user"]
+password=secrets["db_password"]
+port=os.environ.get("DB_PORT", 3306)
+hostname = f"{host}:{port}" if port is not None else host
+
+connection_string = f"{protocol}://{user}:{password}@{hostname}/{database}"
+
+engine = create_engine(connection_string, echo=True)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+models.Base.metadata.create_all(engine)
+
+
+st.set_page_config("Zčekni auto", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
+st.title("Hello World")
+
+# temporary logging
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+logging.info(f"Database connection: {connection_string}")
+
+# write html into st.markdown that displays an image that is a static file in the webui/static folder
+# st.image("static/hug.jpg")
+image_html = open("templates/reffed_image.html").read().format(href="https://www.huggingface.co", image_src="app/static/hug.jpg")
+st.markdown(image_html, unsafe_allow_html=True)
+script_html = open("templates/inline_script.html").read().format(open("static/js/onload.js").read())
+# st.markdown(script_html, unsafe_allow_html=True) # Javascript does not execute with this one
+html(script_html, height=0)
+st.markdown("Hello World")
+
+
+# # list all database tables with mysql.connector
+# cursor = connection.cursor(buffered=True)
+# generator = cursor.execute("SHOW DATABASES")
+# tables = [] if generator is None else generator.fetchall()
+# df = pd.DataFrame(tables)
+# st.table(df)
 # for tablename in tables:
 #     st.write(tablename)
 
-try:
-    cursor.close()
-    connection.close()
-except Exception as e:
-    st.error(e)
+# # close mysql.connector connection
+# try:
+#     cursor.close()
+#     connection.close()
+# except Exception as e:
+#     st.error(e)

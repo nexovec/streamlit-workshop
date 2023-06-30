@@ -26,6 +26,8 @@ services:
   mariadb:
     image: mariadb
     restart: always
+    ports:
+      - 3306:3306 # for debugging connection from host
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
       - MYSQL_DATABASE_FILE=/run/secrets/db_name
