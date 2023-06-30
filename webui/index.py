@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import models
 import logging
+import numpy as np
 
 import debugpy
 
@@ -77,15 +78,37 @@ session = Session()
 models.Base.metadata.create_all(engine)
 
 
-st.set_page_config("Zčekni auto", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
+st.set_page_config("Check-da-car", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
 st.title("Hello World")
+st.sidebar.title("Navigation")
+st.sidebar.button("Home", use_container_width=True)
+st.sidebar.button("Add new car", use_container_width=True)
+st.sidebar.button("Browse cars", use_container_width=True)
+st.sidebar.button("See users", use_container_width=True)
+st.sidebar.button("Gallery", use_container_width=True)
+
+col1, col2 = st.columns(2)
+col1.text_input("Name", placeholder="Name of the car")
+col2.text_input("License plate", value="", placeholder="XXX-XXXX")
+col1, col2, col3 = st.columns([1,2,2])
+with st.spinner("Loading images"):
+    image_data = np.random.rand(100, 100)
+    col1.image(image_data, caption="Car image", use_column_width=True)
+col2.selectbox("Manufacturer", options=["Add entry"])
+col2.selectbox("Model", options=["Add entry"])
+st.text_area("Car description", placeholder="Description of the car")
+col1, col3 = st.columns([2, 1])
+col1.text_input("VIN code", placeholder="VIN", label_visibility="collapsed")
+col3.button("Create car")
+
+# if create_car_btn:
+#     st.write("You can insert a new car here.")
 
 # temporary logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logging.info(f"Database connection: {connection_string}")
 
-# write html into st.markdown that displays an image that is a static file in the webui/static folder
-# st.image("static/hug.jpg")
+# mock streamlit pure html and javascript
 image_html = open("templates/reffed_image.html").read().format(href="https://www.huggingface.co", image_src="app/static/hug.jpg")
 st.markdown(image_html, unsafe_allow_html=True)
 script_html = open("templates/inline_script.html").read().format(open("static/js/onload.js").read())
