@@ -22,7 +22,6 @@ services:
       - ./webui:/app # for live reloading code
     networks:
       - zcekni_auto_internal
-
   mariadb:
     image: mariadb
     restart: always
@@ -42,6 +41,18 @@ services:
       - db_password
     networks:
       - zcekni_auto_internal
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379 # for debugging connection from host
+    networks:
+      - zcekni_auto_internal
+    secrets:
+      - redis_password # TODO: verify this actually gets used
+    configs:
+      - source: configs/redis.conf
+        target: /usr/local/etc/redis/redis.conf
 
 secrets:
   db_root_password:
@@ -52,6 +63,8 @@ secrets:
     file: ./secrets/db_user
   db_password:
     file: ./secrets/db_password
+  redis_password:
+    file: ./secrets/redis_password
 networks:
   zcekni_auto_internal:
     driver: bridge
