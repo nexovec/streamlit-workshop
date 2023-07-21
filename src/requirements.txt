@@ -71,6 +71,7 @@ typing_extensions==4.6.3
 tzdata==2023.3
 tzlocal==4.3.1
 urllib3==2.0.3
+uvicorn==0.23.1
 validators==0.20.0
 virtualenv==20.23.1
 watchdog==3.0.0

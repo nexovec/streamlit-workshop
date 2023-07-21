@@ -12,6 +12,7 @@ services:
       # - USE_PIP_CACHE=true
     ports:
       - 5000:5000
+      - 5001:5001
     depends_on:
       - mariadb
     secrets:

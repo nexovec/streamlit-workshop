@@ -16,6 +16,11 @@ RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
 FROM environment AS app
 
 COPY . .
+
+# for the frontend
 EXPOSE 5000
+# for the backend
+EXPOSE 5001
+
 ENTRYPOINT ["python", "."]
 # ENTRYPOINT ["streamlit", "run", "webui/index.py", "--browser.gatherUsageStats", "false", "--server.enableCORS", "true", "--server.port", "5000"]

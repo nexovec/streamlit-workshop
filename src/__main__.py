@@ -5,6 +5,11 @@ if not __name__ == "__main__":
 
 import subprocess
 import os
+from threading import Thread, Event
+from fastapi import FastAPI
+import uvicorn
+
+# FRONTEND
 
 cwd = os.path.dirname(__file__)
 os.chdir(cwd)
@@ -21,4 +26,27 @@ os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "true"
 cmd = ["streamlit", "run", "webui.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
 
 print(f"LAUNCHER WORKING DIRECTORY: {os.getcwd()}")
-subprocess.run(cmd, cwd=cwd, env=os.environ, check=True)
+def run_frontend():
+    subprocess.run(cmd, cwd=cwd, env=os.environ, check=True)
+
+frontend_thread = Thread(target=run_frontend)
+frontend_thread.start()
+
+# BACKEND
+
+app = FastAPI(title="Launcher", version="0.1.0", description="Launcher for the Streamlit app.")
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.get("/health")
+async def health():
+    return {"message": "OK"}
+
+@app.get("/stop")
+async def stop():
+    exit(0)
+    # return {"message": "OK"}
+
+uvicorn.run(app, host="0.0.0.0", port=5001)
