@@ -7,6 +7,8 @@ import subprocess
 import os
 from threading import Thread, Event
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+import fastapi
 import uvicorn
 
 # FRONTEND
@@ -38,7 +40,8 @@ app = FastAPI(title="Launcher", version="0.1.0", description="Launcher for the S
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    fastapi.logger.info("Redirecting to localhost:5000")
+    return RedirectResponse("localhost:5000")
 
 @app.get("/health")
 async def health():
