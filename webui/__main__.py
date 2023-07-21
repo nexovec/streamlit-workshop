@@ -18,7 +18,7 @@ os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "true"
 #     os.environ["SECRETS_PATH"] = "../secrets" if os.environ.get("SECRETS_PATH") is None else os.environ.get("SECRETS_PATH")
 ############################################################
 
-cmd = ["streamlit", "run", "index.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
+cmd = ["streamlit", "run", "webui.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
 
 print(f"LAUNCHER WORKING DIRECTORY: {os.getcwd()}")
 subprocess.run(cmd, cwd=cwd, env=os.environ, check=True)
