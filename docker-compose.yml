@@ -5,12 +5,14 @@ services:
       context: frontend
       dockerfile: Dockerfile
       target: app
+      # args:
+        # SERVER_PORT: 5001
     restart: always
     container_name: auta_frontend
     environment:
       - DB_HOST=mariadb
     ports:
-      - 5002:5000
+      - 5002:80
     depends_on:
       - backend
     secrets:
@@ -30,7 +32,7 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      -  5001:5001
+      -  5001:80
     depends_on:
       - mariadb
     networks:

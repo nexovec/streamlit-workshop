@@ -1,8 +1,10 @@
 FROM python:3.9 AS base
-ARG USE_PIP_CACHE
+# TODO: supply pip cache location with a default value as ARG
+# TODO: supply pip server location with a default value as ARG
+# TODO: supply server port with a default value as ARG
 WORKDIR /app
 
-RUN pip install --upgrade pip
+# RUN pip install --upgrade pip
 COPY requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt --no-warn-script-location
 
@@ -14,15 +16,7 @@ RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
 
 
 FROM environment AS app
-
-# WORKDIR /app
+ENV STREAMLIT_SERVER_ENABLE_STATIC_SERVING=TRUE
 COPY . .
-
-# for the frontend
-EXPOSE 5000
-# for the backend
-# EXPOSE 5001
-
-# ENTRYPOINT ["python", "."]
-# ENTRYPOINT ["streamlit", "run", ".", "--browser.gatherUsageStats", "false", "--server.enableCORS", "true", "--server.port", "5000"]
-ENTRYPOINT ["streamlit", "run", "__main__.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
+EXPOSE 80
+ENTRYPOINT ["streamlit", "run", "__main__.py", "--browser.gatherUsageStats", "false", "--server.port", "80"]

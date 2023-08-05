@@ -1,11 +1,13 @@
-# if not __name__ == "__main__":
-#     raise Exception("This file is not meant to be imported.")
 
+# print("INFO:")
+# print(__name__)
+# print(__main__)
 # import subprocess
 import os
 from threading import Thread, Event
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastapi.openapi.docs import get_swagger_ui_html
 import fastapi
 import uvicorn
 import logging
@@ -40,9 +42,9 @@ logger = logging.getLogger(__name__)
 
 @app.get("/")
 async def root():
-    logger.info("Redirecting to localhost:5000")
-    # return RedirectResponse("localhost:5000")
-    return "Hello there"
+    logger.info("Redirecting to localhost:5002")
+    return RedirectResponse("http://localhost:5002")
+    # return "Hello there"
 
 @app.get("/health")
 async def health():
@@ -53,4 +55,6 @@ async def stop():
     exit(0)
     # return {"message": "OK"}
 
-# uvicorn.run("__main__:app", host="0.0.0.0", port=5001, reload=True)
+@app.get("/docs")
+async def docs():
+    return get_swagger_ui_html()
