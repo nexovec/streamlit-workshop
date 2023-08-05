@@ -8,9 +8,6 @@ RUN pip install -r requirements.txt --no-warn-script-location
 
 FROM base as environment
 
-RUN mkdir -p ~/.streamlit/
-RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
-    echo "email = \"\""  >> ~/.streamlit/credentials.toml
 
 
 FROM environment AS app
@@ -18,9 +15,11 @@ FROM environment AS app
 COPY . .
 
 # for the frontend
-EXPOSE 5000
+# EXPOSE 5000
 # for the backend
 EXPOSE 5001
 
-ENTRYPOINT ["python", "."]
+WORKDIR /
+ENTRYPOINT ["uvicorn", "--host", "127.0.0.1", "--port", "5001", "--workers", "2", "app.__main__:app"]
+# ENTRYPOINT ["python", "."]
 # ENTRYPOINT ["streamlit", "run", "webui/index.py", "--browser.gatherUsageStats", "false", "--server.enableCORS", "true", "--server.port", "5000"]

@@ -1,15 +1,14 @@
-# TODO: actually use this as a launcher
-# TODO: move debugger in here
-if not __name__ == "__main__":
-    raise Exception("This file is not meant to be imported.")
+# if not __name__ == "__main__":
+#     raise Exception("This file is not meant to be imported.")
 
-import subprocess
+# import subprocess
 import os
 from threading import Thread, Event
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 import fastapi
 import uvicorn
+import logging
 
 # FRONTEND
 
@@ -25,23 +24,25 @@ os.environ["STREAMLIT_SERVER_ENABLE_STATIC_SERVING"] = "true"
 #     os.environ["SECRETS_PATH"] = "../secrets" if os.environ.get("SECRETS_PATH") is None else os.environ.get("SECRETS_PATH")
 ############################################################
 
-cmd = ["streamlit", "run", "webui.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
+# cmd = ["streamlit", "run", "webui.py", "--browser.gatherUsageStats", "false", "--server.port", "5000"]
 
-print(f"LAUNCHER WORKING DIRECTORY: {os.getcwd()}")
-def run_frontend():
-    subprocess.run(cmd, cwd=cwd, env=os.environ, check=True)
+# print(f"LAUNCHER WORKING DIRECTORY: {os.getcwd()}")
+# def run_frontend():
+#     subprocess.run(cmd, cwd=cwd, env=os.environ, check=True)
 
-frontend_thread = Thread(target=run_frontend)
-frontend_thread.start()
+# frontend_thread = Thread(target=run_frontend)
+# frontend_thread.start()
 
 # BACKEND
 
 app = FastAPI(title="Launcher", version="0.1.0", description="Launcher for the Streamlit app.")
+logger = logging.getLogger(__name__)
 
 @app.get("/")
 async def root():
-    fastapi.logger.info("Redirecting to localhost:5000")
-    return RedirectResponse("localhost:5000")
+    logger.info("Redirecting to localhost:5000")
+    # return RedirectResponse("localhost:5000")
+    return "Hello there"
 
 @app.get("/health")
 async def health():
@@ -52,4 +53,4 @@ async def stop():
     exit(0)
     # return {"message": "OK"}
 
-uvicorn.run(app, host="0.0.0.0", port=5001)
+# uvicorn.run("__main__:app", host="0.0.0.0", port=5001, reload=True)

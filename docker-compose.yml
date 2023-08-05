@@ -1,26 +1,38 @@
 version: '3.7'
 services:
-  app:
+  frontend:
     build:
-      context: src
+      context: frontend
       dockerfile: Dockerfile
       target: app
     restart: always
-    container_name: zcekni_auto
+    container_name: auta_frontend
     environment:
       - DB_HOST=mariadb
-      # - USE_PIP_CACHE=true
     ports:
-      - 5000:5000
-      - 5001:5001
+      - 5002:5000
     depends_on:
-      - mariadb
+      - backend
     secrets:
       - db_name
       - db_user
       - db_password
     volumes:
-      - ./src:/app # for live reloading code
+      - ./frontend:/app # for live reloading code
+    networks:
+      - zcekni_auto_internal
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+      target: app
+    container_name: auta_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      -  5001:5001
+    depends_on:
+      - mariadb
     networks:
       - zcekni_auto_internal
   mariadb:
@@ -28,6 +40,7 @@ services:
     restart: always
     ports:
       - 3306:3306 # for debugging connection from host
+    container_name: auta_sql_database
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
       - MYSQL_DATABASE_FILE=/run/secrets/db_name
