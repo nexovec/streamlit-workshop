@@ -9,16 +9,10 @@ services:
         # SERVER_PORT: 5001
     restart: always
     container_name: auta_frontend
-    environment:
-      - DB_HOST=mariadb
     ports:
       - 5002:80
     depends_on:
       - backend
-    secrets:
-      - db_name
-      - db_user
-      - db_password
     volumes:
       - ./frontend:/app # for live reloading code
     networks:
@@ -31,12 +25,18 @@ services:
     container_name: auta_backend
     volumes:
       - ./backend:/app
+    environment:
+      - DB_HOST=mariadb
     ports:
       -  5001:80
     depends_on:
       - mariadb
     networks:
       - zcekni_auto_internal
+    secrets:
+      - db_name
+      - db_user
+      - db_password
   mariadb:
     image: mariadb
     restart: always

@@ -37,16 +37,16 @@ streamlit_menu_items = {
 # database connection
 
 ## validating secrets and environment variables
-secrets = ["db_name", "db_user", "db_password"]
-assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"
-for secret in secrets:
-    path = os.path.join(SECRETS_PATH, secret)
-    condition = os.path.exists(path) and (os.path.isfile(path) or os.path.islink(path))
-    err_msg = f"Please provide {secret} through docker secrets"
-    assert condition, err_msg
-secrets = {secret: open(os.path.join(SECRETS_PATH, secret), "r").read().strip() for secret in secrets}
-for secret in secrets:
-    assert secret != "", f"Secret {os.path.join(SECRETS_PATH, secret)} must not be empty"
+# secrets = ["db_name", "db_user", "db_password"]
+# assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"
+# for secret in secrets:
+#     path = os.path.join(SECRETS_PATH, secret)
+#     condition = os.path.exists(path) and (os.path.isfile(path) or os.path.islink(path))
+#     err_msg = f"Please provide {secret} through docker secrets"
+#     assert condition, err_msg
+# secrets = {secret: open(os.path.join(SECRETS_PATH, secret), "r").read().strip() for secret in secrets}
+# for secret in secrets:
+#     assert secret != "", f"Secret {os.path.join(SECRETS_PATH, secret)} must not be empty"
 
 ## connecting with mysql.connector
 # try:
@@ -64,21 +64,21 @@ for secret in secrets:
 
 ## connecting with sqlalchemy
 # TODO: catch any exceptions
-protocol = "mysql+mysqlconnector"
-host=os.environ.get("DB_HOST", "mariadb")
-database=secrets["db_name"]
-user=secrets["db_user"]
-password=secrets["db_password"]
-port=os.environ.get("DB_PORT", 3306)
-hostname = f"{host}:{port}" if port is not None else host
+# protocol = "mysql+mysqlconnector"
+# host=os.environ.get("DB_HOST", "mariadb")
+# database=secrets["db_name"]
+# user=secrets["db_user"]
+# password=secrets["db_password"]
+# port=os.environ.get("DB_PORT", 3306)
+# hostname = f"{host}:{port}" if port is not None else host
 
-connection_string = f"{protocol}://{user}:{password}@{hostname}/{database}"
+# connection_string = f"{protocol}://{user}:{password}@{hostname}/{database}"
 
-engine = create_engine(connection_string, echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+# engine = create_engine(connection_string, echo=True)
+# Session = sessionmaker(bind=engine)
+# session = Session()
 
-models.Base.metadata.create_all(engine)
+# models.Base.metadata.create_all(engine)
 
 
 st.set_page_config("Check-da-car", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
@@ -166,8 +166,8 @@ if create_car_btn:
 #     st.write("You can insert a new car here.")
 
 # temporary logging
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
-logging.info(f"Database connection: {connection_string}")
+# logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+# logging.info(f"Database connection: {connection_string}")
 
 # mock streamlit pure html and javascript
 image_html = open("templates/reffed_image.html").read().format(href="https://www.huggingface.co", image_src="app/static/hug.jpg")
