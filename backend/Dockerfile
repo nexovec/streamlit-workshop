@@ -9,4 +9,4 @@ FROM base AS app
 COPY . .
 
 EXPOSE 80
-ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "--port", "80", "--workers", "2", "server:app"]
+ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "--port", "80", "--workers", "2", "--reload", "server:app"]
