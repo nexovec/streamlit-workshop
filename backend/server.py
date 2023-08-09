@@ -127,3 +127,7 @@ async def stop():
 # @app.get("/docs")
 # async def docs():
 #     return get_swagger_ui_html()
+
+@app.get("/car_data")
+async def car_data():
+    return ["Mercedes"]

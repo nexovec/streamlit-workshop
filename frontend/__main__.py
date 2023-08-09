@@ -2,6 +2,7 @@ import streamlit as st
 import debugpy
 import os
 import logging
+import asyncio
 
 import views
 # import mysql.connector
@@ -45,6 +46,7 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.sidebar.title("Navigation")
 
+username = "Your Name" # TODO: authentify
 
 car_create_form = st.sidebar.button("Home", use_container_width=True)
 car_create_form = st.sidebar.button("Add new car", use_container_width=True) or car_create_form
@@ -56,3 +58,4 @@ if st.sidebar.button("See users", use_container_width=True):
     st.title("Browse users")
 if st.sidebar.button("Gallery", use_container_width=True):
     st.title("Image gallery")
+st.sidebar.markdown(f"Logged in as :red[{username}]")

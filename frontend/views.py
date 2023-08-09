@@ -3,6 +3,11 @@ import numpy as np
 from PIL import Image
 import random
 from streamlit.components.v1 import html
+import httpx
+import os
+import json
+
+rq = httpx.AsyncClient()
 
 def create_car_view():
     st.title("Create car")
@@ -80,6 +85,13 @@ def create_car_view():
 
 def browse_cars_view():
     st.title("Car browser")
+    with st.spinner():
+        ENDPOINT = "/car_data"
+        car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
+        parsed_data = json.loads(car_datas.read())
+    for car in parsed_data:
+        st.info(car)
+    
 
 def browse_users_view():
     st.title("User browser")

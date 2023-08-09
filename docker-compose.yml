@@ -9,6 +9,8 @@ services:
         # SERVER_PORT: 5001
     restart: always
     container_name: auta_frontend
+    environment:
+      - BACKEND_URL=http://backend
     ports:
       - 5002:80
     depends_on:
