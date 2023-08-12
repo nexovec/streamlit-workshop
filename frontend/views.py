@@ -6,8 +6,9 @@ from streamlit.components.v1 import html
 import httpx
 import os
 import json
+import logging
 
-rq = httpx.AsyncClient()
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 def create_car_view():
     st.title("Create car")
@@ -84,15 +85,20 @@ def create_car_view():
     st.markdown("nevim")
 
 def browse_cars_view():
+    logging.info("Hello")
     st.title("Car browser")
-    with st.spinner():
-        ENDPOINT = "/car_data"
-        car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
-        parsed_data = json.loads(car_datas.read())
+    ENDPOINT = "/car_data"
+    car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
+    parsed_data = json.loads(car_datas.read())
     for car in parsed_data:
-        st.info(car)
-    
+        if st.button(f"{car.get('name')}"):
+            logging.info(f"selected car id: {car.get('name')}")
+            st.session_state.selected_car = car.get("id")
 
+def car_detail_view(car_id: int):
+    car_detail = httpx.get(f"{os.getenv('backend_url')}/car_detail/{car_id}")
+    st.write(car_detail)
+    
 def browse_users_view():
     st.title("User browser")
 

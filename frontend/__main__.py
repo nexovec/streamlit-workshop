@@ -52,7 +52,11 @@ car_create_form = st.sidebar.button("Home", use_container_width=True)
 car_create_form = st.sidebar.button("Add new car", use_container_width=True) or car_create_form
 if car_create_form:
     views.create_car_view()
-if st.sidebar.button("Browse cars", use_container_width=True):
+viewed_car_detail = st.session_state.get("selected_car")
+car_listings_btn = st.sidebar.button("Browse cars", use_container_width=True)
+if viewed_car_detail is not None:
+    views.car_detail_view(viewed_car_detail)
+elif car_listings_btn:
     views.browse_cars_view()
 if st.sidebar.button("See users", use_container_width=True):
     st.title("Browse users")
