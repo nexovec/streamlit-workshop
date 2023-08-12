@@ -14,3 +14,4 @@ You should strongly consider changing values of secrets inside the `./secrets` f
 It's made to work with docker-compose so far.
 
 `docker compose up -d`
+
