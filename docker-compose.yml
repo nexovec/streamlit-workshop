@@ -2,9 +2,9 @@ version: '3.7'
 services:
   frontend:
     build:
-      context: frontend
+      context: .
       dockerfile: Dockerfile
-      target: app
+      target: frontend
       # args:
         # SERVER_PORT: 5001
     restart: always
@@ -16,17 +16,19 @@ services:
     depends_on:
       - backend
     volumes:
+      - ./sql:/app/sql
       - ./frontend:/app # for live reloading code
     networks:
       - zcekni_auto_internal
   backend:
     build:
-      context: backend
+      context: .
       dockerfile: Dockerfile
-      target: app
+      target: backend
     container_name: auta_backend
     volumes:
-      - ./backend:/app
+      - ./sql:/app/sql
+      - ./backend:/app # for live-reloading code
     environment:
       - DB_HOST=mariadb
     ports:

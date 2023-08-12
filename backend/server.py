@@ -11,7 +11,7 @@ import uvicorn
 import logging
 from pydantic import BaseModel
 
-import models
+import sql.models as models
 
 cwd = os.path.dirname(__file__)
 os.chdir(cwd)
