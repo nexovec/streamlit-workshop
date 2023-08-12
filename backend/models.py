@@ -21,7 +21,7 @@ class Credentials(Base):
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
 class Car_Model(Base):
     __tablename__ = "car_model_v1"
-    id = sa.Column(sa.Integer, nullable=False, autoincrement=True, unique=True)
+    id = sa.Column(sa.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     name = sa.Column(sa.String(length=32), nullable=False)
     description = sa.Column(sa.Text, nullable=False, default = "")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)

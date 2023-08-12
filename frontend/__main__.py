@@ -50,6 +50,7 @@ username = "Your Name" # TODO: authentify
 
 car_create_form = st.sidebar.button("Home", use_container_width=True)
 car_create_form = st.sidebar.button("Add new car", use_container_width=True) or car_create_form
+st.info(f"selected car: {st.session_state.get('selected_car')}")
 if car_create_form:
     views.create_car_view()
 viewed_car_detail = st.session_state.get("selected_car")
