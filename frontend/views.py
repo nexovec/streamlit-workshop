@@ -13,7 +13,14 @@ import routing
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 ctx = routing.Routing_Context()
 
-@ctx.route("create_car")
+class ROUTES:
+    CREATE_CAR = "create_car"
+    BROWSE_CARS = "browse_cars"
+    PHOTO_GALLERY = "browse_gallery"
+    BROWSE_USERS = "browse_users"
+    CAR_DETAIL = "car_detail"
+
+@ctx.route(ROUTES.CREATE_CAR)
 def create_car_view():
     st.title("Create car")
     col1, col2 = st.columns(2) 
@@ -94,7 +101,7 @@ def create_car_view():
 #             return car.get("id")
 #     return None
     
-@ctx.route("cars_view")
+@ctx.route(ROUTES.BROWSE_CARS)
 def browse_cars_view():
     # logging.info("Hello")
     st.title("Car browser")
@@ -104,27 +111,44 @@ def browse_cars_view():
 
     ITEMS_PER_PAGE = 20
 
-    buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
+    # buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
+    buttons_list = []
 
     parsed_datas = json.loads(car_datas.read())
-    for i, car in enumerate(parsed_datas):
-        buttons_list[i].button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+    # for i, car in enumerate(parsed_datas):
+    #     btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+    #     buttons_list.append(btn)
 
+    car = parsed_datas[0]
+    btn = st.button(f"{car.get('name')}", key="test_btn")
+    buttons_list.append(btn)
     st.write("End of list")
+    # if buttons_list[0]:
+    if btn:
+        routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
     # chosen_car = car_selection(car_datas)
     # if chosen_car is not None:
-    if any(buttons_list):
-        selected_car = buttons_list[buttons_list == True]
-        st.experimental_set_query_params(query_params={"car_id": selected_car})
+    # for btn in buttons_list:
+    #     if btn:
+    #         print("redirecting to car detail", flush=True)
+    #         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
+        # selected_car = buttons_list[buttons_list == True]
+        # print(f"selected {selected_car}")
+        # st.experimental_set_query_params(query_params={"car_id": selected_car})
             # logging.info(f"selected car id: {car.get('name')}")
             # st.session_state["selected_car"] = car.get("id")
 
+@ctx.route(ROUTES.CAR_DETAIL)
 def car_detail_view(car_id: int):
-    car_detail = httpx.get(f"{os.getenv('backend_url')}/car_detail/{car_id}")
-    st.write(car_detail)
+    print("car detail is being shown!", flush=True)
+    st.title("yaaay")
+    # car_detail = httpx.get(f"{os.getenv('backend_url')}/car_detail/{car_id}")
+    # st.write(car_detail)
     
+@ctx.route(ROUTES.BROWSE_USERS)
 def browse_users_view():
     st.title("Browse users")
 
+@ctx.route(ROUTES.PHOTO_GALLERY)
 def browse_photo_gallery():
     st.title("Image gallery")

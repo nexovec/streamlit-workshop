@@ -58,9 +58,10 @@ st.sidebar.title("Navigation")
 username = "Your Name" # TODO: authentify
 st.sidebar.markdown(f"Logged in as :red[{username}]")
 
-routing_key = routing.Routing_Context.SESSION_KEY_PATH
-if st.session_state.get(routing_key) is None:
-    st.session_state[routing_key] = "create_car"
+ctx = routing.Routing_Context(default=views.ROUTES.CREATE_CAR)
+# routing_key = routing.Routing_Context.SESSION_KEY_PATH
+# if st.session_state.get(routing_key) is None:
+#     st.session_state[routing_key] = "create_car"
 
 
 home_btn = st.sidebar.button("Home", use_container_width=True)
@@ -75,6 +76,17 @@ car_listings_btn = st.sidebar.button("Browse cars", use_container_width=True)
 users_btn = st.sidebar.button("See users", use_container_width=True)
 gallery_btn = st.sidebar.button("Gallery", use_container_width=True)
 
+if home_btn or car_create_btn:
+    ctx.redirect(views.ROUTES.CREATE_CAR)
+
+if car_listings_btn:
+    ctx.redirect(views.ROUTES.BROWSE_CARS)
+
+if users_btn:
+    ctx.redirect(views.ROUTES.BROWSE_USERS)
+
+if gallery_btn:
+    ctx.redirect(views.ROUTES.PHOTO_GALLERY)
 # car_browsing_btn_list = [st.button()]
 
 # selected_car = st.session_state.get("selected_car")
@@ -87,7 +99,7 @@ views.browse_users_view()
 # elif gallery_btn:
 views.browse_photo_gallery()
 # elif viewed_car_detail:
-#     views.car_detail_view(viewed_car_detail)
+    # views.car_detail_view(viewed_car_detail)
 # elif home_btn:
 # views.create_car_view()
 # elif st.session_state.get("just_arrived") is None:
