@@ -13,6 +13,7 @@ import routing
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 ctx = routing.Routing_Context()
 
+CAR_DETAIL_ID = "car_previewed"
 class ROUTES:
     CREATE_CAR = "create_car"
     BROWSE_CARS = "browse_cars"
@@ -115,23 +116,26 @@ def browse_cars_view():
     buttons_list = []
 
     parsed_datas = json.loads(car_datas.read())
-    # for i, car in enumerate(parsed_datas):
-    #     btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
-    #     buttons_list.append(btn)
+    for i, car in enumerate(parsed_datas):
+        btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+        buttons_list.append(btn)
+        if btn:
+            print("redirecting to car detail", flush=True)
+            routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
 
-    car = parsed_datas[0]
-    btn = st.button(f"{car.get('name')}", key="test_btn")
-    buttons_list.append(btn)
-    st.write("End of list")
+    # car = parsed_datas[0]
+    # btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+    # buttons_list.append(btn)
+    # st.write("End of list")
     # if buttons_list[0]:
-    if btn:
-        routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
+    # # if btn:
+    #     routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
     # chosen_car = car_selection(car_datas)
     # if chosen_car is not None:
-    # for btn in buttons_list:
-    #     if btn:
-    #         print("redirecting to car detail", flush=True)
-    #         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
+    for btn in buttons_list:
+        if btn:
+            print("redirecting to car detail", flush=True)
+            routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
         # selected_car = buttons_list[buttons_list == True]
         # print(f"selected {selected_car}")
         # st.experimental_set_query_params(query_params={"car_id": selected_car})
@@ -139,11 +143,11 @@ def browse_cars_view():
             # st.session_state["selected_car"] = car.get("id")
 
 @ctx.route(ROUTES.CAR_DETAIL)
-def car_detail_view(car_id: int):
+def car_detail_view(car_id: int|None):
     print("car detail is being shown!", flush=True)
-    st.title("yaaay")
-    # car_detail = httpx.get(f"{os.getenv('backend_url')}/car_detail/{car_id}")
-    # st.write(car_detail)
+    st.title("Car details")
+    car_detail = httpx.get(f"{os.getenv('BACKEND_URL')}/car_detail/{car_id}")
+    st.write(car_detail)
     
 @ctx.route(ROUTES.BROWSE_USERS)
 def browse_users_view():

@@ -94,6 +94,9 @@ if gallery_btn:
 views.create_car_view()
 # elif car_listings_btn:
 views.browse_cars_view()
+
+selected_car_id = st.session_state.get(views.CAR_DETAIL_ID)
+views.car_detail_view(selected_car_id)
 # elif users_btn:
 views.browse_users_view()
 # elif gallery_btn:
