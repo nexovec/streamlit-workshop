@@ -8,8 +8,12 @@ import os
 import json
 import logging
 
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+import routing
 
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+ctx = routing.Routing_Context()
+
+@ctx.route("create_car")
 def create_car_view():
     st.title("Create car")
     col1, col2 = st.columns(2) 
@@ -83,24 +87,44 @@ def create_car_view():
     # st.markdown(script_html, unsafe_allow_html=True) # Javascript does not execute with this one
     html(script_html, height=0)
     st.markdown("nevim")
-
+# def car_selection(car_list_json):
+#     parsed_data = json.loads(car_list_json.read())
+#     for car in parsed_data:
+#         if st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}"):
+#             return car.get("id")
+#     return None
+    
+@ctx.route("cars_view")
 def browse_cars_view():
-    logging.info("Hello")
+    # logging.info("Hello")
     st.title("Car browser")
     ENDPOINT = "/car_data"
     car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
-    parsed_data = json.loads(car_datas.read())
-    for car in parsed_data:
-        if st.button(f"{car.get('name')}"):
-            logging.info(f"selected car id: {car.get('name')}")
-            st.session_state.selected_car = car.get("id")
+    st.session_state["selected_car"] = None
+
+    ITEMS_PER_PAGE = 20
+
+    buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
+
+    parsed_datas = json.loads(car_datas.read())
+    for i, car in enumerate(parsed_datas):
+        buttons_list[i].button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+
+    st.write("End of list")
+    # chosen_car = car_selection(car_datas)
+    # if chosen_car is not None:
+    if any(buttons_list):
+        selected_car = buttons_list[buttons_list == True]
+        st.experimental_set_query_params(query_params={"car_id": selected_car})
+            # logging.info(f"selected car id: {car.get('name')}")
+            # st.session_state["selected_car"] = car.get("id")
 
 def car_detail_view(car_id: int):
     car_detail = httpx.get(f"{os.getenv('backend_url')}/car_detail/{car_id}")
     st.write(car_detail)
     
 def browse_users_view():
-    st.title("User browser")
+    st.title("Browse users")
 
 def browse_photo_gallery():
-    st.title("Photo gallery")
+    st.title("Image gallery")
