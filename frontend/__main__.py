@@ -91,16 +91,19 @@ if gallery_btn:
 
 # selected_car = st.session_state.get("selected_car")
 # if car_create_btn:
-views.create_car_view()
+# views.create_car_view()
 # elif car_listings_btn:
-views.browse_cars_view()
+# views.browse_cars_view()
 
 selected_car_id = st.session_state.get(views.CAR_DETAIL_ID)
-views.car_detail_view(selected_car_id)
+
+# views.car_detail_view(selected_car_id)
 # elif users_btn:
-views.browse_users_view()
+# views.browse_users_view()
 # elif gallery_btn:
-views.browse_photo_gallery()
+# views.browse_photo_gallery()
+# print("I am rendering", flush=True)
+ctx.render()
 # elif viewed_car_detail:
     # views.car_detail_view(viewed_car_detail)
 # elif home_btn:

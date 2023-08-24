@@ -43,7 +43,7 @@ services:
       - db_password
   mariadb:
     image: mariadb
-    restart: always
+    restart: on-failure
     ports:
       - 3306:3306 # for debugging connection from host
     container_name: auta_sql_database
@@ -63,7 +63,7 @@ services:
       - zcekni_auto_internal
   redis:
     image: redis
-    restart: always
+    restart: on-failure
     ports:
       - 6379:6379 # for debugging connection from host
     networks:
