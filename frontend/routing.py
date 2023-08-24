@@ -2,6 +2,7 @@ from types import NoneType
 import streamlit as st
 from typing import Callable
 
+# Works like flask's app.route. There is currently always only one context(views are shared across all instances)
 class Routing_Context:
     SESSION_KEY_PATH = "routing_path"
     views = {}

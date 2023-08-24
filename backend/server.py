@@ -75,20 +75,12 @@ async def root():
     logging.info("Redirecting to localhost:5002")
     return RedirectResponse("http://localhost:5002")
     # return "Hello there"
-
-class Create_Car_Entry(BaseModel):
-    name: str
-    license_plate: str
-    photos: list[str]
-    manufacturer: str
-    model: str
-    car_description: str
-    vin_code: str
-    
     
 @app.post("/create_car_entry")
-async def create_car_entry(form_contents: Create_Car_Entry):
-    return "NOT IMPLEMENTED YET!"
+# async def create_car_entry(form_contents: models.Create_Car_Entry_Validator):
+async def create_car_entry(form_contents: models.Create_Car_Entry_Validator):
+    
+    return 501 # not implemented
 
 @app.get("/health")
 async def health():

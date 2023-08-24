@@ -8,25 +8,14 @@ import asyncio
 import httpx
 import json
 from functools import wraps
-# from sqlalchemy_utils.functions import getdot
 
 import views
 import routing
-# import mysql.connector
-# import pandas as pd
-# from streamlit.components.v1 import html
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
-# import models
-# import numpy as np
-# from PIL import Image
-# import random
-# import httpx
-
 
 DEBUGGER_PORT = 5678
 DEBUGGER_HOST = "0.0.0.0"
 SECRETS_PATH = os.path.abspath(os.environ.get("SECRETS_PATH", "/run/secrets"))
+
 # TODO: run in a separate file to avoid blocking on reruns (use streamlit.bootstrap)
 if os.environ.get("DEBUGGER") is not None:
     try:
