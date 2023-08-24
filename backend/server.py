@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import decl_base, sessionmaker
 import fastapi
 import uvicorn
 import logging
@@ -58,10 +58,13 @@ hostname = f"{host}:{port}" if port is not None else host
 connection_string = f"{protocol}://{user}:{password}@{hostname}/{database}"
 
 engine = create_engine(connection_string, echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+Session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 models.Base.metadata.create_all(engine)
+
+# Create a sample user
+
+# TODO:
 
 # BACKEND
 
@@ -79,8 +82,31 @@ async def root():
 @app.post("/create_car_entry")
 # async def create_car_entry(form_contents: models.Create_Car_Entry_Validator):
 async def create_car_entry(form_contents: models.Create_Car_Entry_Validator):
-    
-    return 501 # not implemented
+    db = Session()
+
+    valid_fields = form_contents.dict()
+    valid_car_model_fields = {
+        key: value for key, value in valid_fields.items() if key in models.Car_Model.__table__.columns
+    }
+    valid_car_manufacturer_fields = {
+        key: value for key, value in valid_fields.items() if key in models.Car_Manufacturer.__table__.columns
+    }
+    valid_car_entry_fields = {
+        key: value for key, value in valid_fields.items() if key in models.Create_Car_Entry.__table__.columns
+    }
+
+    car_model = models.Car_Model(**valid_car_model_fields)
+    car_manufacturer = models.Car_Manufacturer(**valid_car_manufacturer_fields)
+    car_entry = models.Create_Car_Entry(**valid_car_entry_fields, manufacturer_id=car_manufacturer.id, model_id=car_model.id)
+
+    db.add(car_model)
+    db.add(car_manufacturer)
+    db.add(car_entry)
+
+    db.commit()
+        
+    # return 501 # not implemented
+    return {"status":"OK"}
 
 @app.get("/health")
 async def health():
