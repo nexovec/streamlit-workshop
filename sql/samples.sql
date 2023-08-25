@@ -48,51 +48,95 @@ END WHILE;
 
 CLOSE my_cursor;
 
--- Define a stored procedure
-DELIMITER //
-CREATE PROCEDURE procedure_name()
-BEGIN
-    -- Procedure logic here
-END;
-//
-
 -- Make a compex function
-DELIMITER //
-CREATE FUNCTION fetch_and_return_columns()
+CREATE FUNCTION IF NOT EXISTS fetch_and_return_columns(table_name VARCHAR(50))
 RETURNS VARCHAR(100)
 BEGIN
     DECLARE variable1 VARCHAR(50);
     DECLARE variable2 VARCHAR(50);
     DECLARE result VARCHAR(100);
 
-    DECLARE my_cursor CURSOR FOR SELECT column1, column2 FROM my_table;
+    -- TODO: use table_name
+    -- SET @query = CONCAT('SELECT id, name FROM ', table_name);
+    -- PREPARE my_cursor FROM @query;
+    DECLARE my_cursor CURSOR FOR SELECT id, name FROM car_model_v1;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET @no_more_rows = TRUE;
+
     OPEN my_cursor;
 
     SET result = '';
+    SET @no_more_rows = FALSE;
 
     -- Loop to fetch and process rows
-    FETCH_LOOP: WHILE TRUE DO
+    FETCH_LOOP: LOOP
         FETCH my_cursor INTO variable1, variable2;
-        IF @@SQLSTATUS <> 0 THEN
+        IF @no_more_rows THEN
             LEAVE FETCH_LOOP;
         END IF;
 
         SET result = CONCAT(result, 'Column 1: ', variable1, ', Column 2: ', variable2, '\n');
-    END WHILE;
+    END LOOP;
 
     CLOSE my_cursor;
 
     RETURN result;
 END;
 
+
+-- Use this function
+SELECT fetch_and_return_columns('car_model_v1');
+
+-- Drop the function
+DROP FUNCTION IF EXISTS fetch_and_return_columns;
+
 -- Use a trigger
-DELIMITER //
-CREATE TRIGGER trigger_name BEFORE/AFTER INSERT/UPDATE/DELETE ON table_name
+
+CREATE TRIGGER trigger_name BEFORE/AFTER INSERT/UPDATE/DELETE ON car_model_v1
 FOR EACH ROW
 BEGIN
     -- Trigger logic here
 END;
-//
+
+-- Trigger to avoid duplicate names in the car table
+CREATE TRIGGER check_duplicate_name
+AFTER INSERT ON car_model_v1
+FOR EACH ROW
+BEGIN
+    DECLARE duplicate_count INT;
+
+    SELECT COUNT(*) INTO duplicate_count
+    FROM car_model_v1
+    WHERE name = NEW.name;
+
+    IF duplicate_count > 1 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Duplicate name entry found';
+    END IF;
+END;
+
+-- procedures
+CREATE PROCEDURE log_before_insert()
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Logging before insert from the procedure';
+END;
+
+CREATE TRIGGER log_before_insert_trigger
+BEFORE INSERT ON car_manufacturer_v2
+FOR EACH ROW
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Logging before insert from the trigger';
+    CALL log_before_insert();
+END;
+
+DROP TRIGGER IF EXISTS log_before_insert_trigger;
+DROP PROCEDURE IF EXISTS log_before_insert;
+
+-- index by time of creation
+CREATE INDEX idx_timestamp_created ON car_manufacturer_v2 (timestamp_created);
+
+DROP INDEX idx_timestamp_created ON car_manufacturer_v2;
 
 -- Start a transaction
 START TRANSACTION;
