@@ -10,6 +10,7 @@ import fastapi
 import uvicorn
 import logging
 from pydantic import BaseModel
+from datetime import datetime
 
 import sql.models as models
 
@@ -65,6 +66,11 @@ models.Base.metadata.create_all(engine)
 # Create a sample user
 
 # TODO:
+default_user = models.User(id=1, timestamp_created=datetime.utcnow(), username="admin", password="password")
+session = Session()
+session.add(default_user)
+session.commit()
+
 
 # BACKEND
 
@@ -94,7 +100,11 @@ async def create_car_entry(form_contents: models.Create_Car_Entry_Validator):
     valid_car_entry_fields = {
         key: value for key, value in valid_fields.items() if key in models.Create_Car_Entry.__table__.columns
     }
+    valid_car_entry_fields["owner_id"] = default_user.id
 
+    print(f"valid car fields: {models.Car_Model.__table__.columns}")
+    # print(valid_car_model_fields.get("name"))
+    valid_car_model_fields["name"] = "test"
     car_model = models.Car_Model(**valid_car_model_fields)
     car_manufacturer = models.Car_Manufacturer(**valid_car_manufacturer_fields)
     car_entry = models.Create_Car_Entry(**valid_car_entry_fields, manufacturer_id=car_manufacturer.id, model_id=car_model.id)

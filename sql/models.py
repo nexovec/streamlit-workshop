@@ -12,17 +12,22 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "user"
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, nullable=True, unique=True)
-    nickname = sa.Column(sa.String(length=24), nullable=False)
+    # credentials_id = sa.Column(sa.Integer, sa.ForeignKey(Credentials.id), nullable=True)
+    # nickname = sa.Column(sa.String(length=24), nullable=False)
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
-
-class Credentials(Base):
-    __tablename__ = "credentials_v1"
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, nullable=True, unique=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id))
+    email_verified = sa.Column(sa.Boolean, nullable=False, default=False)
+    deleted = sa.Column(sa.DateTime, nullable=True, default=False)
     username = sa.Column(sa.String(length=24), nullable=False)
-    email = sa.Column(sa.Text, nullable=True, unique=True)
-    password_hash = sa.Column(sa.String(length=32), nullable=False)
-    timestamp_created = sa.Column(sa.DateTime, nullable=False)
+    password = sa.Column(sa.String(length=32), nullable=False)
+
+# class Credentials(Base):
+#     __tablename__ = "credentials_v1"
+#     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, nullable=True, unique=True)
+#     # user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id))
+#     username = sa.Column(sa.String(length=24), nullable=False)
+#     email = sa.Column(sa.Text, nullable=True, unique=True)
+#     password_hash = sa.Column(sa.String(length=32), nullable=False)
+#     timestamp_created = sa.Column(sa.DateTime, nullable=False)
 
 
 class Car_Manufacturer_Validator(BaseModel):
@@ -45,8 +50,8 @@ class Car_Model_Validator(BaseModel):
 class Car_Model(Base):
     __tablename__ = "car_model_v1"
     id = sa.Column(sa.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
-    name = sa.Column(sa.String(length=32), nullable=False, default="")
-    description = sa.Column(sa.Text, nullable=False, default = "")
+    name = sa.Column(sa.String(length=32), nullable=False)
+    description = sa.Column(sa.Text, nullable=False, default="")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
 
 class Create_Car_Entry_Validator(BaseModel):
@@ -72,7 +77,7 @@ class Create_Car_Entry(Base):
     owner_id = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     creator_id = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     license_plate = sa.Column(sa.String(length=12), nullable=True)
-    model = orm.relationship(Car_Model)
+    # model = orm.relationship(Car_Model)
     description = sa.Column(sa.Text, nullable=False, default="")
     vin_code = sa.Column(sa.Text, nullable=False, default="")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
