@@ -1,5 +1,21 @@
 {
     "cSpell.words": [
         "streamlit"
+    ],
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "zcekni-auto",
+            "database": "db_test_cars_v1",
+            "username": "root",
+            "password": "password"
+        }
     ]
 }

@@ -9,6 +9,7 @@ import json
 import logging
 
 import routing
+from sql.models import Car_Model
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 ctx = routing.Routing_Context()
@@ -47,8 +48,45 @@ def create_car_view():
             if len(images) > 0:
                 image_data = images[random.randint(0, len(images) - 1)]
             st.image(image_data, caption="thumbnail", use_column_width=True)
-    manufacturer = col2.selectbox("Manufacturer", options=["Add entry"])
-    amodel = col2.selectbox("Model", options=["Add entry"])
+
+
+    # col2.text_input("Create manufacturer")
+    manufacturer_options = []
+    address = f"{os.getenv('BACKEND_URL')}/get_car_manufacturers"
+    manufacturer_options = httpx.get(address).json()
+    manufacturer_options.append("Add entry")
+    manufacturer = col2.selectbox("Manufacturer", options=manufacturer_options)
+    # st.info(manufacturer)
+
+    # if manufacturer == "Add entry":
+        # options = []
+    if manufacturer == manufacturer_options[-1]:
+        col_2_1, col_2_2 = col2.columns(2)
+        manufacturer_name = col_2_1.text_input("Manufacturer name")
+        if col_2_2.button("submit"):
+            address = f"{os.getenv('BACKEND_URL')}/create_car_manufacturer"
+            body_params = {"name": manufacturer_name}
+            httpx.post(address, params=body_params)
+    else:
+        address = f"{os.getenv('BACKEND_URL')}/get_car_models/{manufacturer}"
+        resp = httpx.get(address)
+        st.info(resp)
+        # print(resp)
+        options = resp.json()
+        options.append("Add entry")
+        car_model = col2.selectbox("Model", options=options)
+        if car_model == options[-1]:
+            col_2_1, col_2_2 = col2.columns(2)
+            car_model_name = col_2_1.text_input("Model name")
+            if col_2_2.button("submit"):
+                address = f"{os.getenv('BACKEND_URL')}/create_car_model"
+                body_params = {"manufacturer_name": manufacturer, "model_name": car_model_name}
+                httpx.post(address, params=body_params)
+                
+        
+
+        # amodel = col2.selectbox("Model", options=["Add entry"])
+
     # images = [np.random.rand(100, 100)] * 10
     # if images == None:
     #     images = []
@@ -112,16 +150,19 @@ def browse_cars_view():
 
     ITEMS_PER_PAGE = 20
 
-    # buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
-    buttons_list = []
+    for thing in car_datas:
+        st.info(f"{thing}")
 
-    parsed_datas = json.loads(car_datas.read())
-    for i, car in enumerate(parsed_datas):
-        btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
-        buttons_list.append(btn)
-        if btn:
-            print("redirecting to car detail", flush=True)
-            routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
+    # buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
+    # buttons_list = []
+
+    # parsed_datas = json.loads(car_datas.read())
+    # for i, car in enumerate(parsed_datas):
+    #     btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
+    #     buttons_list.append(btn)
+    #     if btn:
+    #         print("redirecting to car detail", flush=True)
+    #         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
 
     # car = parsed_datas[0]
     # btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")

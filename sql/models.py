@@ -6,6 +6,7 @@ from sqlalchemy.sql import False_
 from sqlalchemy.sql.lambdas import NullLambdaStatement
 from pydantic import BaseModel
 import pydantic as pyd
+import typing
 
 Base = declarative_base()
 
@@ -38,9 +39,11 @@ class Car_Manufacturer_Validator(BaseModel):
 class Car_Manufacturer(Base):
     __tablename__ = "car_manufacturer_v2"
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
-    name = sa.Column(sa.String(length=32), nullable=True, default="")
+    name = sa.Column(sa.String(length=32), nullable=True)
     description = sa.Column(sa.Text, nullable=False, default = "")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
+
+    # create_car_entry = orm.relationship("create_car_entry_v1", back_populates="manufacturer")
 
 class Car_Model_Validator(BaseModel):
     id: int = 1
@@ -51,6 +54,7 @@ class Car_Model(Base):
     __tablename__ = "car_model_v1"
     id = sa.Column(sa.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     name = sa.Column(sa.String(length=32), nullable=False)
+    car_manufacturer_id = sa.Column(sa.Integer, sa.ForeignKey(Car_Manufacturer.id))
     description = sa.Column(sa.Text, nullable=False, default="")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
 
@@ -59,7 +63,7 @@ class Create_Car_Entry_Validator(BaseModel):
 
     id: int = 1
     license_plate: str = "6U6 6666"
-    manufacturer: Car_Manufacturer_Validator
+    # manufacturer: Car_Manufacturer_Validator
     model: Car_Model_Validator
     owner_id: int = 1
     description: str = ""
@@ -82,7 +86,7 @@ class Create_Car_Entry(Base):
     vin_code = sa.Column(sa.Text, nullable=False, default="")
     timestamp_created = sa.Column(sa.DateTime, nullable=False)
 
-    # manufacturer = orm.relationship(Car_Manufacturer, back_populates="create_car_entry_v1")
+    # manufacturer: orm.Mapped[typing.List[Car_Manufacturer]] = orm.relationship(Car_Manufacturer, back_populates="create_car_entry")
     # model = orm.relationship(Car_Model)
     # owner = orm.relationship(User)
     # creator = orm.relationship(User)
