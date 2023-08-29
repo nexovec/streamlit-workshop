@@ -35,6 +35,7 @@ class Car_Manufacturer_Validator(BaseModel):
     id: int = 1
     name: str = "Škoda"
     description: str = "My favorite manufacturer"
+    __tablename__ = "user"
 # FIXME: don't default name on manufacturer and model
 class Car_Manufacturer(Base):
     __tablename__ = "car_manufacturer_v2"
@@ -72,7 +73,7 @@ class Create_Car_Entry_Validator(BaseModel):
 
     # class Config:
         # orm_mode = True
-        # arbitrary_types_allowed = True 
+        # arbitrary_types_allowed = True
 class Create_Car_Entry(Base):
     __tablename__ = "create_car_entry_v1"
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)

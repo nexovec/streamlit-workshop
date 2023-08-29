@@ -145,12 +145,15 @@ def browse_cars_view():
     # logging.info("Hello")
     st.title("Car browser")
     ENDPOINT = "/car_data"
-    car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
+    response = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
     st.session_state["selected_car"] = None
+
+    cars = response.json()
 
     ITEMS_PER_PAGE = 20
 
-    for thing in car_datas:
+    st.warning(f"#cars: {len(cars)}")
+    for thing in cars:
         st.info(f"{thing}")
 
     # buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
@@ -173,10 +176,10 @@ def browse_cars_view():
     #     routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
     # chosen_car = car_selection(car_datas)
     # if chosen_car is not None:
-    for btn in buttons_list:
-        if btn:
-            print("redirecting to car detail", flush=True)
-            routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
+# for btn in buttons_list:
+#     if btn:
+#         print("redirecting to car detail", flush=True)
+#         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
         # selected_car = buttons_list[buttons_list == True]
         # print(f"selected {selected_car}")
         # st.experimental_set_query_params(query_params={"car_id": selected_car})
