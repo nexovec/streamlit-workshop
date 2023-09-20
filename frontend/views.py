@@ -5,9 +5,8 @@ import random
 from streamlit.components.v1 import html
 import httpx
 import os
-import json
 import logging
-import mysql.connector
+# import mysql.connector
 import sqlite3
 from datetime import datetime
 import plotly.express as px
@@ -100,7 +99,7 @@ def home():
 @ctx.route(ROUTES.CREATE_CAR)
 def create_car_view():
     st.title("Create car")
-    col1, col2 = st.columns(2) 
+    col1, col2 = st.columns(2)
     car_name = col1.text_input("Name", placeholder="Name of the car")
     license_plate = col2.text_input("License plate", value="", placeholder="XXX-XXXX")
     col1, col2, col3 = st.columns([1, 2, 2])
