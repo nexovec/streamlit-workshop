@@ -26,8 +26,8 @@ async def root():
     return RedirectResponse("http://localhost:5002")
     
 # udela hustou vec s databazi
-@app.post("/create_car_entry")
-async def create_car_entry():
+@app.post("/create_car")
+async def create_car():
     print("delam hustou vec s databazi")
     return {"status":"ok"}
 

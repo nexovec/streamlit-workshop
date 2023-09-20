@@ -1,4 +1,5 @@
 jupyter
 jupyterlab
 nbformat
+autopep8
 -r requirements.txt

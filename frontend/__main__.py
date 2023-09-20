@@ -33,7 +33,7 @@ streamlit_menu_items = {
     # 'About': "<url>",
 }
 
-st.set_page_config("Check-da-car", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
+st.set_page_config("Streamlit workshop", layout="wide", initial_sidebar_state="expanded", page_icon="🚗", menu_items=streamlit_menu_items)
 hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
