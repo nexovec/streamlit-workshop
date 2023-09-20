@@ -1,0 +1,4 @@
+jupyter
+jupyterlab
+nbformat
+-r requirements.txt

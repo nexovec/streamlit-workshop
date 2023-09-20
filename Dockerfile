@@ -9,7 +9,7 @@ FROM base AS backend
 # COPY ./backend/requirements.txt ./requirements.txt
 # RUN pip install -r requirements.txt --no-warn-script-location
 
-COPY ./sql .
+# COPY ./sql .
 COPY backend .
 
 EXPOSE 80
@@ -30,7 +30,7 @@ RUN echo "[general]"  > ~/.streamlit/credentials.toml && \
     echo "email = \"\""  >> ~/.streamlit/credentials.toml
 
 ENV STREAMLIT_SERVER_ENABLE_STATIC_SERVING=TRUE
-COPY ./sql .
+# COPY ./sql .
 COPY frontend .
 EXPOSE 80
 ENTRYPOINT ["streamlit", "run", "__main__.py", "--browser.gatherUsageStats", "false", "--server.port", "80"](venv)

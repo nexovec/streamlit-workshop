@@ -7,20 +7,52 @@ import httpx
 import os
 import json
 import logging
+import mysql.connector
 
 import routing
-from sql.models import Car_Model
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 ctx = routing.Routing_Context()
 
 CAR_DETAIL_ID = "car_previewed"
 class ROUTES:
+    HOME = "home"
     CREATE_CAR = "create_car"
     BROWSE_CARS = "browse_cars"
-    PHOTO_GALLERY = "browse_gallery"
-    BROWSE_USERS = "browse_users"
-    CAR_DETAIL = "car_detail"
+    LOGIN_SCREEN = "login_screen"
+    PHOTO_GALLERY = "photo gallery"
+
+# načítám docker secrets
+SECRETS_PATH = os.path.abspath(os.environ.get("SECRETS_PATH", "/run/secrets"))
+secrets = ["db_name", "db_user", "db_password"]
+assert os.environ.get("DB_HOST") is not None, f"Please provide url of mariadb through variable DB_HOST"
+for secret in secrets:
+ path = os.path.join(SECRETS_PATH, secret)
+ condition = os.path.exists(path) and (os.path.isfile(path) or os.path.islink(path))
+ err_msg = f"Please provide {secret} through docker secrets"
+ assert condition, err_msg
+secrets = {secret: open(os.path.join(SECRETS_PATH, secret), "r").read().strip() for secret in secrets}
+for secret in secrets:
+ assert secret != "", f"Secret {os.path.join(SECRETS_PATH, secret)} must not be empty"
+
+# přípojka k mariadb
+try:
+ connection = mysql.connector.connect(
+     host=os.environ.get("DB_HOST", "mariadb"),
+     database=secrets["db_name"],
+     user=secrets["db_user"],
+     password=secrets["db_password"],
+     port=os.environ.get("DB_PORT", 3306),
+ )
+except Exception as e:
+ st.warning("Our database is probably restarting, try later.")
+ st.error(e)
+ st.stop()
+
+# pohledy ve streamlitu
+@ctx.route(ROUTES.HOME)
+def home():
+    st.title("Streamlit workshop")
 
 @ctx.route(ROUTES.CREATE_CAR)
 def create_car_view():
@@ -50,16 +82,11 @@ def create_car_view():
             st.image(image_data, caption="thumbnail", use_column_width=True)
 
 
-    # col2.text_input("Create manufacturer")
     manufacturer_options = []
-    address = f"{os.getenv('BACKEND_URL')}/get_car_manufacturers"
+    address = f"{os.getenv('BACKEND_URL')}/get_manufacturers"
     manufacturer_options = httpx.get(address).json()
     manufacturer_options.append("Add entry")
     manufacturer = col2.selectbox("Manufacturer", options=manufacturer_options)
-    # st.info(manufacturer)
-
-    # if manufacturer == "Add entry":
-        # options = []
     if manufacturer == manufacturer_options[-1]:
         col_2_1, col_2_2 = col2.columns(2)
         manufacturer_name = col_2_1.text_input("Manufacturer name")
@@ -133,16 +160,10 @@ def create_car_view():
     # st.markdown(script_html, unsafe_allow_html=True) # Javascript does not execute with this one
     html(script_html, height=0)
     st.markdown("nevim")
-# def car_selection(car_list_json):
-#     parsed_data = json.loads(car_list_json.read())
-#     for car in parsed_data:
-#         if st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}"):
-#             return car.get("id")
-#     return None
     
+# zobrazí auta v databázi
 @ctx.route(ROUTES.BROWSE_CARS)
 def browse_cars_view():
-    # logging.info("Hello")
     st.title("Car browser")
     ENDPOINT = "/car_data"
     response = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
@@ -155,48 +176,11 @@ def browse_cars_view():
     st.warning(f"#cars: {len(cars)}")
     for thing in cars:
         st.info(f"{thing}")
-
-    # buttons_list = [st.empty() for i in range(ITEMS_PER_PAGE)]
-    # buttons_list = []
-
-    # parsed_datas = json.loads(car_datas.read())
-    # for i, car in enumerate(parsed_datas):
-    #     btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
-    #     buttons_list.append(btn)
-    #     if btn:
-    #         print("redirecting to car detail", flush=True)
-    #         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
-
-    # car = parsed_datas[0]
-    # btn = st.button(f"{car.get('name')}", key=f"car_listing_{str(car.get('id'))}")
-    # buttons_list.append(btn)
-    # st.write("End of list")
-    # if buttons_list[0]:
-    # # if btn:
-    #     routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
-    # chosen_car = car_selection(car_datas)
-    # if chosen_car is not None:
-# for btn in buttons_list:
-#     if btn:
-#         print("redirecting to car detail", flush=True)
-#         routing.Routing_Context().redirect(ROUTES.CAR_DETAIL)
-        # selected_car = buttons_list[buttons_list == True]
-        # print(f"selected {selected_car}")
-        # st.experimental_set_query_params(query_params={"car_id": selected_car})
-            # logging.info(f"selected car id: {car.get('name')}")
-            # st.session_state["selected_car"] = car.get("id")
-
-@ctx.route(ROUTES.CAR_DETAIL)
-def car_detail_view(car_id: int|None):
-    print("car detail is being shown!", flush=True)
-    st.title("Car details")
-    car_detail = httpx.get(f"{os.getenv('BACKEND_URL')}/car_detail/{car_id}")
-    st.write(car_detail)
     
-@ctx.route(ROUTES.BROWSE_USERS)
-def browse_users_view():
-    st.title("Browse users")
+@ctx.route(ROUTES.LOGIN_SCREEN)
+def login_screen():
+    st.title("Přihlášování")
 
 @ctx.route(ROUTES.PHOTO_GALLERY)
-def browse_photo_gallery():
-    st.title("Image gallery")
+def photo_gallery():
+    st.title("Galerie")

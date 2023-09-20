@@ -8,9 +8,9 @@ services:
       # args:
         # SERVER_PORT: 5001
     restart: always
-    container_name: auta_frontend
     environment:
       - BACKEND_URL=http://backend
+      - DB_HOST=mariadb
     ports:
       - 5002:80
     depends_on:
@@ -18,6 +18,10 @@ services:
     volumes:
       - ./sql:/app/sql
       - ./frontend:/app # for live reloading code
+    secrets:
+      - db_name
+      - db_user
+      - db_password
     networks:
       - zcekni_auto_internal
   backend:
@@ -25,22 +29,15 @@ services:
       context: .
       dockerfile: Dockerfile
       target: backend
-    container_name: auta_backend
     volumes:
       - ./sql:/app/sql
       - ./backend:/app # for live-reloading code
-    environment:
-      - DB_HOST=mariadb
     ports:
       -  5001:80
     depends_on:
       - mariadb
     networks:
       - zcekni_auto_internal
-    secrets:
-      - db_name
-      - db_user
-      - db_password
   mariadb:
     image: mariadb
     restart: on-failure

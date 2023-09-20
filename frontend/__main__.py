@@ -26,7 +26,6 @@ if os.environ.get("DEBUGGER") is not None:
         st.error(e)
         st.warning(f"Check if port {DEBUGGER_PORT} is already in use.")
         st.stop()
-        # raise e
 
 streamlit_menu_items = {
     # "Get help": "<url>",
@@ -48,73 +47,27 @@ username = "Your Name" # TODO: authentify
 st.sidebar.markdown(f"Logged in as :red[{username}]")
 
 ctx = routing.Routing_Context(default=views.ROUTES.CREATE_CAR)
-# routing_key = routing.Routing_Context.SESSION_KEY_PATH
-# if st.session_state.get(routing_key) is None:
-#     st.session_state[routing_key] = "create_car"
 
+home_btn = st.sidebar.button("Základy", use_container_width=True)
+car_create_btn = st.sidebar.button("Přidej auto", use_container_width=True)
+car_listings_btn = st.sidebar.button("Zobraz auta", use_container_width=True)
+login_btn = st.sidebar.button("Přihlášení", use_container_width=True)
+others_btn = st.sidebar.button("Ostatní", use_container_width=True)
 
-home_btn = st.sidebar.button("Home", use_container_width=True)
-car_create_btn = st.sidebar.button("Add new car", use_container_width=True)
-# st.info(f"selected car: {st.session_state.get('selected_car')}")
-# views.create_car_view()
-# viewed_car_detail = st.session_state.get("selected_car")
-car_listings_btn = st.sidebar.button("Browse cars", use_container_width=True)
-# views.car_detail_view(viewed_car_detail)
-# views.browse_users_view
-# browse_cars_view()
-users_btn = st.sidebar.button("See users", use_container_width=True)
-gallery_btn = st.sidebar.button("Gallery", use_container_width=True)
+if home_btn:
+    ctx.redirect(views.ROUTES.HOME)
 
-if home_btn or car_create_btn:
+if car_create_btn:
     ctx.redirect(views.ROUTES.CREATE_CAR)
 
 if car_listings_btn:
     ctx.redirect(views.ROUTES.BROWSE_CARS)
 
-if users_btn:
-    ctx.redirect(views.ROUTES.BROWSE_USERS)
-
-if gallery_btn:
+if login_btn:
+    ctx.redirect(views.ROUTES.LOGIN_SCREEN)
+if others_btn:
     ctx.redirect(views.ROUTES.PHOTO_GALLERY)
-# car_browsing_btn_list = [st.button()]
-
-# selected_car = st.session_state.get("selected_car")
-# if car_create_btn:
-# views.create_car_view()
-# elif car_listings_btn:
-# views.browse_cars_view()
 
 selected_car_id = st.session_state.get(views.CAR_DETAIL_ID)
 
-# views.car_detail_view(selected_car_id)
-# elif users_btn:
-# views.browse_users_view()
-# elif gallery_btn:
-# views.browse_photo_gallery()
-# print("I am rendering", flush=True)
 ctx.render()
-# elif viewed_car_detail:
-    # views.car_detail_view(viewed_car_detail)
-# elif home_btn:
-# views.create_car_view()
-# elif st.session_state.get("just_arrived") is None:
-#     st.error("You have just arrived at the website but I have no default view for you sorry :(")
-#     st.session_state["just_arrived"] = False
-# elif selected_car is None:
-#     # switch to the car detail
-#     ENDPOINT = "/car_data"
-#     car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}")
-#     st.session_state["selected_car"] = views.car_selection(car_datas)
-# elif selected_car is not None:
-#     views.car_detail_view(selected_car)
-# else:
-#     param = st.experimental_get_query_params().get("car_id")
-#     if param is not None:
-#         # view car detail
-#         ENDPOINT = "/car_detail"
-#         car_datas = httpx.get(f"{os.getenv('BACKEND_URL')}{ENDPOINT}/{param}")
-#         assert car_datas
-#         for key, val in car_datas.json():
-#             st.write(":\t".join([key, val]))
-#     else:
-#         st.error("Expected a car id to show details, but none is in the params")
