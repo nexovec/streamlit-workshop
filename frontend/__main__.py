@@ -46,13 +46,13 @@ st.sidebar.title("Navigation")
 username = "Your Name" # TODO: authentify
 st.sidebar.markdown(f"Logged in as :red[{username}]")
 
-ctx = routing.Routing_Context(default=views.ROUTES.CREATE_CAR)
+ctx = routing.Routing_Context(default=views.ROUTES.HOME)
 
 home_btn = st.sidebar.button("Základy", use_container_width=True)
 car_create_btn = st.sidebar.button("Přidej auto", use_container_width=True)
 car_listings_btn = st.sidebar.button("Zobraz auta", use_container_width=True)
 login_btn = st.sidebar.button("Přihlášení", use_container_width=True)
-others_btn = st.sidebar.button("Ostatní", use_container_width=True)
+gallery_btn = st.sidebar.button("Galerie", use_container_width=True)
 
 if home_btn:
     ctx.redirect(views.ROUTES.HOME)
@@ -65,7 +65,7 @@ if car_listings_btn:
 
 if login_btn:
     ctx.redirect(views.ROUTES.LOGIN_SCREEN)
-if others_btn:
+if gallery_btn:
     ctx.redirect(views.ROUTES.PHOTO_GALLERY)
 
 selected_car_id = st.session_state.get(views.CAR_DETAIL_ID)
