@@ -12,7 +12,7 @@ services:
       - BACKEND_URL=http://backend
       - DB_HOST=mariadb
     ports:
-      - 5002:80
+      - 80:80
     depends_on:
       - backend
     volumes:
