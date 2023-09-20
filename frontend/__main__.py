@@ -41,6 +41,7 @@ hide_streamlit_style = """
             </style>
             """
        
+st.title("zmena")
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.sidebar.title("Navigation")
 username = "Your Name" # TODO: authentify
